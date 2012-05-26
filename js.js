@@ -1,3 +1,23 @@
+
+/*//z.B.
+var items=[
+    { de:'das Haus', en:'home', lab:'label', 12:['de','en'] }
+]; 
+var de=[], em=[], lab=[]; //zB
+                /*
+    				localStorage.setItem("key", "wert");
+					localStorage.getItem("key");
+					localStorage.clear();
+					localStorage.length
+*/
+
+var items=localStorage.getItem('items');
+if(!items){ items=[]    }
+else { items=JSON.parse(items); Array.isArray(items)? '': items=[];}
+
+var itemsNew=true;
+var orgText;
+
 $(function() {
     $("#lang_from").change(function() {
         lang_from=this.value;
@@ -19,14 +39,14 @@ $(function() {
         localStorage.setItem("lang_to", lang_to);
     });
     $("#searchform").submit(function() {
-		var text = $.trim($("#text").val());
-		if(text.length > 0){
-			console.log('terwr');
+		orgText = $.trim($("#text").val());
+		if(orgText.length > 0){
+			console.log('orgText.length > 0');
 			$.ajax({
 				type: "GET",
 				url: "http://translate.google.de/translate_a/t",
 				//url: "http://pro.gseel.de/test/logParam.php",
-				data: { client: "t", text: text, hl:lang_to, sl:lang_from, tl :lang_to }
+				data: { client: "t", text: orgText, hl:lang_to, sl:lang_from, tl :lang_to }
 			}).done(function (res){
 				var translated='';
 				var json=JSON.parse(res.replace(/,,/g,",null,").replace(/,,/g,",null,"));
@@ -41,36 +61,57 @@ $(function() {
 					translated += json[0][i][0];
 				}
 				console.log(translated);
-				$("#trans").html(translated+'<button class="star" data-icon="star" data-iconpos="notext" data-inline="true" ></button>');
+				$("#trans").html('<button class="star" data-icon="star" data-iconpos="right" data-mini="true" data-inline="true" >'+translated+'</button>');
 				var h='';
 				if( Array.isArray(json[1])	){
 					for (var i=0, li=json[1].length; i < li; i++){
 						if (!json[1][i][0]) continue;
 						h+='<div style="float: left;margin: 5px;">'; 
-						h+='<div style="font-weight: bold;">'+ json[1][i][0]+'</div>'; 
+						h+='<div style="text-align: center;"><h4>'+ json[1][i][0]+'</h4></div>'; 
 						for (var j=0, lj=json[1][i][1].length; j < lj; j++){
-							h+='<div>'+ json[1][i][1][j]+'<button class="star" data-icon="star" data-iconpos="notext" data-inline="true"></button></div>'; 
+							h+='<button class="star" data-icon="star" data-iconpos="right" data-mini="true">'+json[1][i][1][j]+'</button>'; 
 						}
 						h+='</div>'; 
 					}
 				}
 				$("#trans2").html(h);
-                $(".star").button();
+                $(".star").button().click(function(){
+                    items.push([orgText,this.innerHTML]);
+                    itemsNew=true;
+                    localStorage.setItem('items', JSON.stringify(items));
+                });
 				
-                
-                /*
-					localStorage.setItem("key", "wert");
-					localStorage.getItem("key");
-					localStorage.clear();
-					localStorage.length*/
-		
-			
-				//alert(transText);
 			}).fail(function(jqXHR, textStatus) {
 			  alert( "Request failed: " + textStatus );
 			});
 		}
 		return false;
 	});
+    $("#starpage").click(function(){
+       console.log('starpage');
+       if(!itemsNew) return true;
+        var items=localStorage.getItem('items');
+        
+        items=JSON.parse(items); 
+        if(!Array.isArray(items)) items=[];
+        var h='<table style="width:100%;">';
+        for (var i=0, li=items.length; i < li; i++){
+            h+='<tr><td>'+items[i][0]+'</td><td>'+ items[i][1]+'</td>';
+            h+='<td><button class="starDel" data-icon="delete" data-iconpos="notext">'+i+'</button></td><tr>';
+        }
+        h+='</table>';
+        
+        $("#starPlatz").html(h);
+        itemsNew=false;
+        $(".starDel").button().click(function(){
+            console.log('click: .starDel');
+            items.splice(this.innerHTML,1);
+            itemsNew=true;
+            localStorage.setItem('items', JSON.stringify(items));
+            $("#starpage").click();
+            
+        });
+            
+    });
 
 });

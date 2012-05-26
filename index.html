@@ -2,22 +2,22 @@
 <!DOCTYPE html> 
 <html> 
     <head> 
-    <title>Prosto</title> 
+    <title>Prosto Translator</title> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
-	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+	<script src="jquery-1.7.2.min.js"></script>
+	<script src="jquery.mobile-1.1.0.min.js"></script>
     <script src="js.js"></script>
 </head> 
 <body> 
 
-<div data-role="page" data-theme='b'>
-    <!--div data-role="header">
-		<h1>Prosto</h1>
-        <!--a href="index.html" data-icon="gear" class="ui-btn-right">Options</a-->
-	</div--><!-- /header -->
-
-	<div data-role="content">
+<div data-role="page" data-theme='b' id='main'>
+    <div data-role="header">
+        <h1>Prosto Translator</h1>
+        <a href="#starpage" id='starpage' data-icon="star" data-iconpos="notext" class="ui-btn-right" style="right:40px;"></a>
+        <a href="#setpage" data-icon="gear" data-iconpos="notext" class="ui-btn-right"></a>
+	</div><!-- /header -->
+	<div data-role="content" style="padding: 15px 0px;">
         <div style="width:100%;display:block;">
     		<div style="width:40%;display:inline-block;float:left">
     			<select id="lang_from" data-icon="arrow-d" data-iconpos='right' data-mini="true">
@@ -34,7 +34,7 @@
     	</div>
     	<br>
         
-        <form id='searchform' action="#">
+        <form id='searchform' action="#" style="margin: -7px;">
             <table style="width:100%;"><tr>
         		<td style="padding:0px">
         			<input type="search" id='text' data-mini="true"/>
@@ -52,6 +52,28 @@
     
     </div><!-- /content -->
 </div><!-- /page -->
+
+<div data-role="page" data-theme='b' id='setpage'>
+    <div data-role="header">
+        <a href="#main" data-icon="home" data-iconpos="notext"></a>
+        <h1>Prosto Translator</h1>
+        <a href="#starpage" data-icon="star" data-iconpos="notext" class="ui-btn-right" ></a>
+    </div><!-- /header -->
+	<div data-role="content">
+    </div><!-- /content -->
+</div><!-- /page -->
+
+<div data-role="page" data-theme='b' id='starpage'>
+    <div data-role="header">
+        <a href="#main" data-icon="home" data-iconpos="notext"></a>
+        <h1>Prosto Translator</h1>
+        <a href="#setpage" data-icon="gear" data-iconpos="notext" class="ui-btn-right"></a>
+    </div><!-- /header -->
+    <div data-role="content">
+        <div id='starPlatz' style='margin: 12px;'></div>
+    </div><!-- /content -->
+</div><!-- /page -->
+
 <script>
 var lang = {
       'AFRIKAANS' : 'af',
