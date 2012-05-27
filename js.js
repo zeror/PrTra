@@ -10,18 +10,20 @@ var de=[], em=[], lab=[]; //zB
 					localStorage.clear();
 					localStorage.length
 */
-$( document ).bind( "mobileinit", function() {
+//$( document ).bind( "mobileinit", function() {
     $.mobile.pushStateEnabled = false;
     $.mobile.allowCrossDomainPages = true;
     $.mobile.page.prototype.options.domCache = true;
-});
+//});
 
 var w = window;
 var log = function(){
-    //console.log.apply(console,arguments);
+   // console.log.apply(console,arguments);
 }
-var items='';//w.localStorage.getItem('items');
-items=JSON.parse(items); 
+log('init');
+var items=w.localStorage.getItem('iitems');
+try{ items=JSON.parse(items); }catch(e){ items=[] };
+
 if(!Array.isArray(items)) items=[];
 
 var itemsNew=true;
@@ -54,10 +56,12 @@ $(function() {
 			$.ajax({
 				type: "GET",
 				url: "http://translate.google.de/translate_a/t",
+                //url: 'http://prtra.zeror.c9.io/go',
 				//url: "http://pro.gseel.de/test/logParam.php",
 				data: { client: "t", text: orgText, hl:lang_to, sl:lang_from, tl :lang_to }
 			}).done(function (res){
-				var translated='';
+				log(res);
+                var translated='';
 				var json=JSON.parse(res.replace(/,,/g,",null,").replace(/,,/g,",null,"));
 				try{
 					json[0][0][0]; log('Parse OK');
