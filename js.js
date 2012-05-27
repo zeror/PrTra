@@ -10,9 +10,15 @@ var de=[], em=[], lab=[]; //zB
 					localStorage.clear();
 					localStorage.length
 */
+$( document ).bind( "mobileinit", function() {
+    $.mobile.pushStateEnabled = false;
+    $.mobile.allowCrossDomainPages = true;
+    $.mobile.page.prototype.options.domCache = true;
+});
+
 var w = window;
 var log = function(){
-    //console.log.apply(console,arguments);
+    console.log.apply(console,arguments);
 }
 var items=w.localStorage.getItem('items');
 items=JSON.parse(items); 
@@ -44,7 +50,7 @@ $(function() {
     $("#searchform").submit(function() {
 		orgText = $.trim($("#text").val());
 		if(orgText.length > 0){
-			log('orgText.length > 0',this);
+			log('orgText.length > 0');
 			$.ajax({
 				type: "GET",
 				url: "http://translate.google.de/translate_a/t",
@@ -90,6 +96,7 @@ $(function() {
 		}
 		return false;
 	});
+    
     $("#starpage").click(function(){
         log('starpage');
         if(!itemsNew) return true;
