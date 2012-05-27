@@ -12,8 +12,8 @@ var de=[], em=[], lab=[]; //zB
 */
 
 var items=localStorage.getItem('items');
-if(!items){ items=[]    }
-else { items=JSON.parse(items); Array.isArray(items)? '': items=[];}
+items=JSON.parse(items); 
+if(!Array.isArray(items)) items=[];
 
 var itemsNew=true;
 var orgText;
@@ -66,7 +66,7 @@ $(function() {
 				if( Array.isArray(json[1])	){
 					for (var i=0, li=json[1].length; i < li; i++){
 						if (!json[1][i][0]) continue;
-						h+='<div style="float: left;margin: 5px;">'; 
+						h+='<div style="float: left;margin: 3px;">'; 
 						h+='<div style="text-align: center;"><h4>'+ json[1][i][0]+'</h4></div>'; 
 						for (var j=0, lj=json[1][i][1].length; j < lj; j++){
 							h+='<button class="star" data-icon="star" data-iconpos="right" data-mini="true">'+json[1][i][1][j]+'</button>'; 
@@ -88,12 +88,9 @@ $(function() {
 		return false;
 	});
     $("#starpage").click(function(){
-       console.log('starpage');
-       if(!itemsNew) return true;
-        var items=localStorage.getItem('items');
+        console.log('starpage');
+        if(!itemsNew) return true;
         
-        items=JSON.parse(items); 
-        if(!Array.isArray(items)) items=[];
         var h='<table style="width:100%;">';
         for (var i=0, li=items.length; i < li; i++){
             h+='<tr><td>'+items[i][0]+'</td><td>'+ items[i][1]+'</td>';
