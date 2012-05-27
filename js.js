@@ -18,7 +18,7 @@ $( document ).bind( "mobileinit", function() {
 
 var w = window;
 var log = function(){
-    console.log.apply(console,arguments);
+    //console.log.apply(console,arguments);
 }
 var items=w.localStorage.getItem('items');
 items=JSON.parse(items); 
