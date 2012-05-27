@@ -14,6 +14,7 @@ var de=[], em=[], lab=[]; //zB
     $.mobile.pushStateEnabled = false;
     $.mobile.allowCrossDomainPages = true;
     $.mobile.page.prototype.options.domCache = true;
+    $.mobile.defaultPageTransition="none"
 //});
 
 var w = window;
@@ -21,7 +22,7 @@ var log = function(){
    // console.log.apply(console,arguments);
 }
 log('init');
-var items=w.localStorage.getItem('iitems');
+var items=w.localStorage.getItem('items');
 try{ items=JSON.parse(items); }catch(e){ items=[] };
 
 if(!Array.isArray(items)) items=[];
@@ -89,9 +90,11 @@ $(function() {
 				}
 				$("#trans2").html(h);
                 $(".star").button().click(function(){
+                    if (!confirm('Save Item "'+this.innerHTML+'"')) return true;
+
                     items.push([orgText,this.innerHTML]);
                     itemsNew=true;
-                    //w.localStorage.setItem('items', JSON.stringify(items));
+                    w.localStorage.setItem('items', JSON.stringify(items));
                 });
 				
 			}).fail(function(jqXHR, textStatus) {
@@ -108,7 +111,7 @@ $(function() {
         var h='<table style="width:100%;">';
         for (var i=0, li=items.length; i < li; i++){
             h+='<tr><td>'+items[i][0]+'</td><td>'+ items[i][1]+'</td>';
-            h+='<td><button class="starDel" data-icon="delete" data-iconpos="notext">'+i+'</button></td><tr>';
+            h+='<td><button class="starDel" data-icon="delete" data-iconpos="notext" data-item="'+items[i][0]+' :: '+ items[i][1]+'">'+i+'</button></td><tr>';
         }
         h+='</table>';
         
@@ -116,9 +119,10 @@ $(function() {
         itemsNew=false;
         $(".starDel").button().click(function(){
             log('click: .starDel');
+            if (!confirm('Delete Item "'+$(this).data('item')+'"')) return true;
             items.splice(this.innerHTML,1);
             itemsNew=true;
-            //w.localStorage.setItem('items', JSON.stringify(items));
+            w.localStorage.setItem('items', JSON.stringify(items));
             $("#starpage").click();
             
         });
