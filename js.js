@@ -20,7 +20,7 @@ var w = window;
 var log = function(){
     //console.log.apply(console,arguments);
 }
-var items=w.localStorage.getItem('items');
+var items='';//w.localStorage.getItem('items');
 items=JSON.parse(items); 
 if(!Array.isArray(items)) items=[];
 
@@ -87,7 +87,7 @@ $(function() {
                 $(".star").button().click(function(){
                     items.push([orgText,this.innerHTML]);
                     itemsNew=true;
-                    w.localStorage.setItem('items', JSON.stringify(items));
+                    //w.localStorage.setItem('items', JSON.stringify(items));
                 });
 				
 			}).fail(function(jqXHR, textStatus) {
@@ -114,7 +114,7 @@ $(function() {
             log('click: .starDel');
             items.splice(this.innerHTML,1);
             itemsNew=true;
-            w.localStorage.setItem('items', JSON.stringify(items));
+            //w.localStorage.setItem('items', JSON.stringify(items));
             $("#starpage").click();
             
         });
