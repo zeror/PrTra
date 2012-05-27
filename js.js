@@ -10,8 +10,11 @@ var de=[], em=[], lab=[]; //zB
 					localStorage.clear();
 					localStorage.length
 */
-
-var items=localStorage.getItem('items');
+var w = window;
+var log = function(){
+    //console.log.apply(console,arguments);
+}
+var items=w.localStorage.getItem('items');
 items=JSON.parse(items); 
 if(!Array.isArray(items)) items=[];
 
@@ -21,11 +24,11 @@ var orgText;
 $(function() {
     $("#lang_from").change(function() {
         lang_from=this.value;
-        localStorage.setItem("lang_from", this.value);
+        w.localStorage.setItem("lang_from", this.value);
     });
     $("#lang_to").change(function() {
         lang_to=this.value;
-        localStorage.setItem("lang_to", this.value);
+        w.localStorage.setItem("lang_to", this.value);
     });
     $("#lang_change").click(function() {
         var temp = lang_to;
@@ -35,13 +38,13 @@ $(function() {
         $("#lang_from").val(lang_from).selectmenu('refresh');
         $("#lang_to").val(lang_to).selectmenu('refresh');
 
-        localStorage.setItem("lang_from", lang_from);
-        localStorage.setItem("lang_to", lang_to);
+        w.localStorage.setItem("lang_from", lang_from);
+        w.localStorage.setItem("lang_to", lang_to);
     });
     $("#searchform").submit(function() {
 		orgText = $.trim($("#text").val());
 		if(orgText.length > 0){
-			console.log('orgText.length > 0');
+			log('orgText.length > 0',this);
 			$.ajax({
 				type: "GET",
 				url: "http://translate.google.de/translate_a/t",
@@ -51,16 +54,16 @@ $(function() {
 				var translated='';
 				var json=JSON.parse(res.replace(/,,/g,",null,").replace(/,,/g,",null,"));
 				try{
-					json[0][0][0]; console.log('Parse OK');
+					json[0][0][0]; log('Parse OK');
 				}catch(e){
 					translated = 'Parse Error';
 					return;
 				}
-				console.log(json);
+				//log(json);
 				for (var i=0, l=json[0].length; i < l; i++){
 					translated += json[0][i][0];
 				}
-				console.log(translated);
+				log(translated);
 				$("#trans").html('<button class="star" data-icon="star" data-iconpos="right" data-mini="true" data-inline="true" >'+translated+'</button>');
 				var h='';
 				if( Array.isArray(json[1])	){
@@ -78,17 +81,17 @@ $(function() {
                 $(".star").button().click(function(){
                     items.push([orgText,this.innerHTML]);
                     itemsNew=true;
-                    localStorage.setItem('items', JSON.stringify(items));
+                    w.localStorage.setItem('items', JSON.stringify(items));
                 });
 				
 			}).fail(function(jqXHR, textStatus) {
-			  alert( "Request failed: " + textStatus );
+			  w.alert( "Request failed: " + textStatus );
 			});
 		}
 		return false;
 	});
     $("#starpage").click(function(){
-        console.log('starpage');
+        log('starpage');
         if(!itemsNew) return true;
         
         var h='<table style="width:100%;">';
@@ -101,10 +104,10 @@ $(function() {
         $("#starPlatz").html(h);
         itemsNew=false;
         $(".starDel").button().click(function(){
-            console.log('click: .starDel');
+            log('click: .starDel');
             items.splice(this.innerHTML,1);
             itemsNew=true;
-            localStorage.setItem('items', JSON.stringify(items));
+            w.localStorage.setItem('items', JSON.stringify(items));
             $("#starpage").click();
             
         });
