@@ -2,20 +2,21 @@
 <html>
     <head> 
     <title>Prosto Translator</title> 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
 	<link rel="stylesheet" href="jquery.mobile-1.1.0.min.css" />
 	<!--script src="cordova-1.7.0.js"></script-->
     <script src="jquery-1.7.2.min.js"></script>
 	<script src="jquery.mobile-1.1.0.min.js"></script>
     <script src="js.js"></script>
+    <script type="text/javascript" src="http://dev.jtsage.com/cdn/simpledialog/latest/jquery.mobile.simpledialog2.min.js"></script>
 </head> 
 <body> 
 
 <div data-role="page" data-theme='b' id='main'>
     <div data-role="header">
         <h1>Prosto Translator</h1>
-        <a href="#starpage" id='starpage' data-icon="star" data-iconpos="notext" class="ui-btn-right" style="right:40px;"></a>
-        <a href="#setpage" data-icon="gear" data-iconpos="notext" class="ui-btn-right"></a>
+        <a href="#starpage" data-icon="star" data-iconpos="notext" class="ui-btn-right"></a>
+        <a href="#setpage"  data-icon="gear" data-iconpos="notext" class="ui-btn-left"></a>
 	</div><!-- /header -->
 	<div data-role="content" style="padding: 15px 0px;">
         <div style="width:100%;display:block;">
@@ -54,18 +55,31 @@
 
 <div data-role="page" data-theme='b' id='setpage'>
     <div data-role="header">
-        <a href="#main" data-icon="home" data-iconpos="notext"></a>
         <h1>Prosto Translator</h1>
-        <a href="#starpage" data-icon="star" data-iconpos="notext" class="ui-btn-right" ></a>
+        <a href="#main" data-icon="home" data-iconpos="notext" class="ui-btn-right"></a>
+        <a href="#starpage" data-icon="star" data-iconpos="notext" class="ui-btn-left" ></a>
     </div><!-- /header -->
 	<div data-role="content">
+        <div style="width:17%;display:inline-block;">
+            Label:
+        </div>
+        <div style="width:55%;display:inline-block;">
+            <select name="selectLabel" id="selectLabel" data-mini="true">
+            </select>
+        </div>
+        <div style="width:18%; display:inline-block;  text-align: center;">
+            <button id="addLabel" data-icon="plus" data-iconpos="notext"  data-inline="true"></button>
+        </div>
+        <div style="width:31px; display:inline-block; float:right; margin:0 -8px;">
+            <button id="delLabel" data-icon="delete" data-iconpos="notext" data-inline="true" ></button>        
+        </div>
     </div><!-- /content -->
 </div><!-- /page -->
 
 <div data-role="page" data-theme='b' id='starpage'>
     <div data-role="header">
-        <a href="#main" data-icon="home" data-iconpos="notext"></a>
         <h1>Prosto Translator</h1>
+        <a href="#main" data-icon="home" data-iconpos="notext" class="ui-btn-left"></a>
         <a href="#setpage" data-icon="gear" data-iconpos="notext" class="ui-btn-right"></a>
     </div><!-- /header -->
     <div data-role="content">
@@ -199,6 +213,28 @@ if(!lang_to ) lang_to = 'de';
 document.getElementById("lang_from").value = lang_from;
 document.getElementById("lang_to").value = lang_to;
 
+var labels = localStorage.getItem("labels");
+try{ labels=JSON.parse(labels); }catch(e){ labels=[] };
+if(!Array.isArray(labels)) labels=[];
+h='<option value="-1">no Label</option>';
+for ( var i in labels){
+    h+= '<option>'+labels[i]+'</option>'
+}
+document.getElementById('selectLabel').innerHTML =h;
+
+var aktLab = localStorage.getItem("aktLab");
+if(aktLab)  document.getElementById('selectLabel').value = aktLab;
+else aktLab = 'no Label';
+
+var ilab = localStorage.getItem("ilab");
+try{ ilab=JSON.parse(ilab); }catch(e){ ilab=[] };
+if(!Array.isArray(ilab)) ilab=[];
+var its={};
+for ( var i in ilab){
+    var t = localStorage.getItem( ilab[i]);
+    try{ t=JSON.parse(t); }catch(e){ t={} };
+    if (t.count) its[ilab[i]] = t; 
+}
 </script>
 
 </body>

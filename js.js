@@ -1,36 +1,38 @@
-
-/*//z.B.
-var items=[
-    { de:'das Haus', en:'home', lab:'label', 12:['de','en'] }
-]; 
-var de=[], em=[], lab=[]; //zB
-                /*
-    				localStorage.setItem("key", "wert");
-					localStorage.getItem("key");
-					localStorage.clear();
-					localStorage.length
+/*
+its={
+    'label':{
+        count:xxx,
+        items:{
+            '1111':['aa','bb'],
+            ...
+        }
+    },
+    ...
+}
 */
-//$( document ).bind( "mobileinit", function() {
-    $.mobile.pushStateEnabled = false;
-    $.mobile.allowCrossDomainPages = true;
-    $.mobile.page.prototype.options.domCache = true;
-    $.mobile.defaultPageTransition="none"
-//});
 
 var w = window;
 var log = function(){
-   // console.log.apply(console,arguments);
+   console.log.apply(console,arguments);
 }
 log('init');
-var items=w.localStorage.getItem('items');
-try{ items=JSON.parse(items); }catch(e){ items=[] };
-
-if(!Array.isArray(items)) items=[];
 
 var itemsNew=true;
 var orgText;
 
 $(function() {
+    $.mobile.pushStateEnabled = false;
+    $.mobile.allowCrossDomainPages = true;
+    $.mobile.page.prototype.options.domCache = true;
+    $.mobile.defaultPageTransition="none";
+    
+    $('#main').bind('swipeleft',function(){ $.mobile.changePage("#starpage");});
+    $('#main').bind('swiperight',function(){ $.mobile.changePage("#setpage"); });
+    $('#starpage').bind('swipeleft',function(){ $.mobile.changePage("#setpage");});
+    $('#starpage').bind('swiperight',function(){ $.mobile.changePage("#main");});
+    $('#setpage').bind('swipeleft',function(){ $.mobile.changePage("#main");});
+    $('#setpage').bind('swiperight',function(){ $.mobile.changePage("#starpage");});
+    
     $("#lang_from").change(function() {
         lang_from=this.value;
         w.localStorage.setItem("lang_from", this.value);
@@ -39,7 +41,8 @@ $(function() {
         lang_to=this.value;
         w.localStorage.setItem("lang_to", this.value);
     });
-    $("#lang_change").click(function() {
+    $("#lang_change").bind('vclick',function() {
+
         var temp = lang_to;
         lang_to = lang_from;
         lang_from = temp;
@@ -50,6 +53,7 @@ $(function() {
         w.localStorage.setItem("lang_from", lang_from);
         w.localStorage.setItem("lang_to", lang_to);
     });
+    var ttt;
     $("#searchform").submit(function() {
 		orgText = $.trim($("#text").val());
 		if(orgText.length > 0){
@@ -60,7 +64,7 @@ $(function() {
                 //url: 'http://prtra.zeror.c9.io/go',
 				//url: "http://pro.gseel.de/test/logParam.php",
 				data: { client: "t", text: orgText, hl:lang_to, sl:lang_from, tl :lang_to }
-			}).done(function (res){
+			}).done(ttt = function (res){
 				log(res);
                 var translated='';
 				var json=JSON.parse(res.replace(/,,/g,",null,").replace(/,,/g,",null,"));
@@ -89,44 +93,106 @@ $(function() {
 					}
 				}
 				$("#trans2").html(h);
-                $(".star").button().click(function(){
-                    if (!confirm('Save Item "'+this.innerHTML+'"')) return true;
-
-                    items.push([orgText,this.innerHTML]);
+                $(".star").button().bind('vclick', function(){
+                  
+                    if (!confirm('Save in "'+aktLab+'" Item "'+this.innerHTML+'"')) return true;
+                    if (its[aktLab]){
+                        var c = its[aktLab].count += 1;
+                        its[aktLab].items[c]=[orgText,this.innerHTML];
+                        
+                    }else{
+                        its[aktLab]={
+                            count:1,
+                            items:{ 1 : [orgText,this.innerHTML]}
+                        }
+                        ilab.push(aktLab);
+                        w.localStorage.setItem('ilab', JSON.stringify(ilab));
+                    }
+                    w.localStorage.setItem(aktLab, JSON.stringify(its[aktLab]));
                     itemsNew=true;
-                    w.localStorage.setItem('items', JSON.stringify(items));
                 });
 				
 			}).fail(function(jqXHR, textStatus) {
 			  w.alert( "Request failed: " + textStatus );
+              ttt('[[["nach Hause","home","",""]],[["Adverb",["nach Hause","zu Hause","zuhause","daheim","heimwärts"],[["nach Hause",["home","homewards"]],["zu Hause",["at home","home","in","indoors","on the home front"]],["zuhause",["at home"]],["daheim",["home","at home"]],["heimwärts",["home","homeward","in a homeward direction"]]]],["Substantiv",["Haus","Heimat","Zuhause","Heim","Inland","Daheim","Wohnheim","Waisenhaus","Anstalt","Ziel"],[["Haus",["house","home","building","household","property","family"]],["Heimat",["home","homeland","native country","native land","motherland","home town"]],["Zuhause",["home"]],["Heim",["home","hostel","clubhouse","hall of residence","recreation center"]],["Inland",["inland","home"]],["Daheim"],["Wohnheim",["dormitory","dorm","hostel","hall of residence","home"]],["Waisenhaus",["orphanage","home"]],["Anstalt",["institution","institute","establishment","home"]],["Ziel",["target","goal","aim","objective","destination","home"]]]],["Adjektiv",["Heim-","heimisch","privat","inländisch"],[["Heim-",["home"]],["heimisch",["home","native","indigenous","familiar","local","regional"]],["privat",["private","home","personal","independent"]],["inländisch",["domestic","inland","home"]]]],["Verb",["heimkehren"],[["heimkehren",["home"]]]]],"en",,[["nach Hause",[5],1,0,780,0,2,0]],[["home",4,,,""],["home",5,[["nach Hause",780,1,0],["Zuhause",131,1,0],["Heimat",37,1,0],["Heim",28,1,0],["Haus",22,1,0]],[[0,4]],"home"]],,,[["en"]],441]');
+
 			});
 		}
 		return false;
 	});
     
-    $("#starpage").click(function(){
+    
+    var starpageShow;
+    $('#starpage').bind('pagebeforeshow',starpageShow = function(){
         log('starpage');
         if(!itemsNew) return true;
-        
-        var h='<table style="width:100%;">';
-        for (var i=0, li=items.length; i < li; i++){
-            h+='<tr><td>'+items[i][0]+'</td><td>'+ items[i][1]+'</td>';
-            h+='<td><button class="starDel" data-icon="delete" data-iconpos="notext" data-item="'+items[i][0]+' :: '+ items[i][1]+'">'+i+'</button></td><tr>';
+        var h='';
+        for ( var lab in its){
+            h+='<h4 style="margin-bottom: 0px;">'+lab+'</h4>';
+            h+='<table style="width:100%;">';
+            var items = its[lab].items;
+            for (var i in items){
+                h+='<tr><td>'+items[i][0]+'</td><td>'+ items[i][1]+'</td>';
+                h+='<td><button class="starDel" data-icon="delete" data-iconpos="notext" data-mini="true" data-item="'+items[i][0]+' :: '+ items[i][1]+'" ';
+                h+='data-label="'+lab+'">'+i+'</button></td><tr>';
+            }
+            h+='</table>';
         }
-        h+='</table>';
         
         $("#starPlatz").html(h);
         itemsNew=false;
-        $(".starDel").button().click(function(){
+        $(".starDel").button().bind('vclick',function(){
             log('click: .starDel');
             if (!confirm('Delete Item "'+$(this).data('item')+'"')) return true;
-            items.splice(this.innerHTML,1);
+            var lab = '' + $(this).data('label');//toString
+            delete its[lab].items[this.innerHTML];
+            
+            if($.isEmptyObject(its[lab].items)){
+                delete its[lab];
+                w.localStorage.removeItem(lab);
+                var index = ilab.indexOf(lab);
+                if (index !=-1) ilab.splice(index,1);
+                console.log(ilab);
+                w.localStorage.setItem('ilab', JSON.stringify(ilab));
+                
+            }else{
+                w.localStorage.setItem(lab, JSON.stringify(its[lab]));    
+            }
             itemsNew=true;
-            w.localStorage.setItem('items', JSON.stringify(items));
-            $("#starpage").click();
+            starpageShow();
             
         });
             
+    });
+    
+    //setpage
+     $("#addLabel").bind('vclick',function() {
+
+        var label = prompt("Add Label");
+        if (!label || !label.trim()) return;
+        $('#selectLabel').append('<option>'+label+'</option>');
+        labels.push(label);
+        w.localStorage.setItem('labels', JSON.stringify(labels));
+
+    });
+    $("#delLabel").bind('vclick',function() {
+        $('#selectLabel option:selected').each(function(){
+            if(this.value==-1)return;
+            var index = labels.indexOf(this.text);
+            if(index==-1) return;
+            if (!confirm('Delete Label "'+this.text+'"')) return true;
+            labels.splice(index, 1);
+            w.localStorage.setItem('labels', JSON.stringify(labels));
+            $(this).remove();
+        });
+        $("#selectLabel").selectmenu('refresh');
+        aktLab=$('#selectLabel option:selected')[0].text;
+        w.localStorage.setItem("aktLab", this.value);
+    });
+    $("#selectLabel").change(function() {
+        aktLab=$('#selectLabel option:selected')[0].text;
+        w.localStorage.setItem("aktLab", aktLab);
+
     });
 
 });
